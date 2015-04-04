@@ -9,36 +9,46 @@ import org.chocosolver.solver.search.loop.monitors.*;
 public class BasicKnapsack {
 
 	public static void main(String[] args) {
-		// TODO Auto-generated method stub
 		Solver solver = new Solver();
-		IntVar[] items = new IntVar[3]; //il y a 5 items parmis lesquels choisir
-		items[0] = VF.bounded("item00", 0, 3, solver);  //le nombre de chaque item qu'on peut choisir??
-		items[1] = VF.bounded("item01", 0, 2, solver);
+		
+		//nb d'items différents qu'on peut choisir
+		IntVar[] items = new IntVar[3]; 
+
+		//le nombre de chaque item qu'on peut choisir
+		items[0] = VF.bounded("item00", 0, 3, solver);  
+		items[1] = VF.bounded("item01", 0, 1, solver);
 		items[2] = VF.bounded("item02", 0, 1, solver);
 		
-		
+		//la capacité du sac à dos
 		IntVar totalWeight = VF.bounded("TotalWeight", 0, 8, solver);
 		
-		int[] weights = new int[]{1,3,8};
-		int[] values = new int[]{1,4,10000};
+		//tableau de poids pour tous les items i
+		int[] weights = new int[]{2,2,8};
 		
+		//tableau de valeurs pour tous les items i
+		int[] values = new int[]{3000,4000,10000};
+		
+		//calcul de la valeur maximale possible (pour un sac à dos sans capacité maximale)
 		int maxValue=0;
 		for(int j=0; j<items.length; j++) {
 			maxValue = maxValue+ (items[j].getUB()*values[j]);
 		}
 		
-		
+		//valeur à maximiser
 		IntVar totalValue = VF.bounded("TotalValue", 0, maxValue, solver);
 		
 		
 		solver.post(ICF.knapsack(items, totalWeight, totalValue, weights, values));
 		
+		//affichage de la solution
 		solver.findOptimalSolution(ResolutionPolicy.MAXIMIZE, totalValue);
 		for(int i = 0; i<3; i++) {
 			System.out.println(items[i]);
 		}
 		System.out.println(totalValue);
 		System.out.println(totalWeight);
+		
+		
 		Chatterbox.printStatistics(solver);
 	}
 
